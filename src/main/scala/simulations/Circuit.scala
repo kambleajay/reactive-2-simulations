@@ -98,8 +98,8 @@ abstract class CircuitSimulator extends Simulator {
         andGate(in, notX, out1)
         andGate(in, x, out2)
         val half = out.size / 2
-        demux(out1, xs, out take half)
-        demux(out2, xs, out drop half)
+        demux(out1, xs, out drop half)
+        demux(out2, xs, out take half)
       }
     }
   }

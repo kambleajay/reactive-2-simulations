@@ -1,12 +1,14 @@
 package simulations
 
-import org.scalatest.FunSuite
+import org.scalatest._
+import org.scalatest.matchers._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import scala.collection.mutable.ListBuffer
+import org.scalatest.prop.Checkers
 
 @RunWith(classOf[JUnitRunner])
-class EpidemySuite extends FunSuite {
+class EpidemySuite extends FunSuite with ShouldMatchers with Checkers {
 
   test("prevalence rate") {
     val prevalenceRate = 0.01
@@ -42,6 +44,26 @@ class EpidemySuite extends FunSuite {
     }
   }
 
+  test("a person makes a move in 5 days") {
+    val es = new EpidemySimulator
+    val aPerson = es.persons.head
+    var (lastRow, lastCol) = (aPerson.row, aPerson.col)
+    val testDays = 6
+    var noOfMoves = 0
+
+    while (es.agenda.head.time < testDays) {
+      es.next
+      if(aPerson.row != lastRow || aPerson.col != lastCol) {
+        noOfMoves = noOfMoves + 1
+        lastRow = aPerson.row
+        lastCol = aPerson.col
+      }
+    }
+
+    noOfMoves should be > 0
+    noOfMoves should be <= 5
+  }
+
   test("life cycle") {
     val es = new EpidemySimulator
 
@@ -56,13 +78,8 @@ class EpidemySuite extends FunSuite {
 
     val infectedPerson = (es.persons.find { _.infected }).get
 
-    //println(s"->Infected person=$infectedPerson")
-    //println(s"Agenda=$es.agenda")
-    var debug = ListBuffer[String]()
     //before incubation time
     while (es.agenda.head.time < incubationTime) {
-      debug += s"Infected person=$infectedPerson"
-      //println(s"IP=${infectedPerson.infected}")
       assert(infectedPerson.infected == true, "Infected person keeps infected in 6 days")
       assert(infectedPerson.sick == false, "Infected person does not get sick in 6 days")
       assert(infectedPerson.immune == false, "Infected person cannot become immune in 6 days")
@@ -102,5 +119,9 @@ class EpidemySuite extends FunSuite {
       infectedTimes = infectedTimes + (if (healthyPerson.infected) 1 else 0)
     }
     assert(infectedTimes > 0, "A person should get infected according to the transmissibility rate when he moves into a room with an infectious person")
+  }
+  
+  ignore("Properties") {
+    check(new EpidemySpecification)
   }
 }

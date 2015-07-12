@@ -28,6 +28,8 @@ libraryDependencies += "com.squareup.retrofit" % "retrofit" % "1.0.0"
 
 libraryDependencies += "org.scala-lang" % "scala-reflect" % "2.10.2"
 
+libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.10.1" % "test"
+
 // This setting defines the project to which a solution is submitted. When creating a
 // handout, the 'createHandout' task will make sure that its value is correct.
 submitProjectName := "simulations"
